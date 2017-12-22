@@ -12,6 +12,10 @@ Created on 2017/12/20 14:42
 from bs4 import BeautifulSoup
 import json
 import numpy as np
+import os
+from selenium import webdriver
+import time
+from utils import *
 
 
 def parse_and_create(fileName):
@@ -22,32 +26,37 @@ def parse_and_create(fileName):
         return
     else:
         html = f.read()
-        bsObj = BeautifulSoup(html, 'lxml')
-        try:
-            songs = bsObj.find('div', {'id': 'm-record'}).find_all('li')
-        except AttributeError:
-            print('Sorry! The file is not deseired.')
-            return
-        else:
-            songList = []
-            for song in songs:
-                order = song.find('span', {'class': 'num'}).get_text()[:-1]
-                songInfo = song.find('span', {'class': 'txt'})
-                songId = songInfo.find('a').attrs['href'].split('=')[1]
-                songName = songInfo.find('b').get_text()
-                index = songName.find('cover')
-                if index != -1:
-                    songName = songName.split('(')[0]
-                songName = songName.strip()
-                singer = songInfo.find('span', {'class': 'ar s-fc8'}).get_text()[2:]
-                count = song.find('div', {'class': 'tops'}).get_text()[:-1]
-                item = {'order': int(order), 'id': songId, 'name': songName, 'singer': singer, 'count': int(count)}
-                songList.append(item)
-            songList = json.dumps(songList)
-            with open(fileName.replace('html', 'habit'), 'w') as fp:
-                fp.write(songList)
+        songList = parse_html(html)
+        songList = json.dumps(songList)
+        with open(fileName.replace('html', 'habit'), 'w') as fp:
+            fp.write(songList)
     finally:
         f.close()
+
+
+def parse_web(id):
+    id = str(id)
+    url = 'http://music.163.com/#/user/home?id=' + id
+    driver = webdriver.PhantomJS()
+    driver.get(url)
+    frame = driver.find_element_by_id('g_iframe')
+    driver.switch_to.frame(frame)
+    allSongsBtn = driver.find_element_by_id('songsall')
+    if allSongsBtn.text != '':
+        allSongsBtn.click()
+        time.sleep(1)
+        moreBtn = driver.find_element_by_class_name('more').find_element_by_tag_name('a').click()
+        time.sleep(1)
+        allSongsBtn = driver.find_element_by_id('songsall').click()
+        time.sleep(1)
+        html = driver.page_source
+        songList = parse_html(html)
+        print('{} musics were collected.'.format(len(songList)))
+        songList = json.dumps(songList)
+        with open('data/' + id + '.habit', 'w') as fp:
+            fp.write(songList)
+    else:
+        print('Sorry! Too less music.')
 
 
 def compute_similarity(file1, file2):
@@ -85,7 +94,6 @@ def compute_similarity(file1, file2):
 
     list1 = np.array(list1)
     list2 = np.array(list2)
-    print(list1, list1)
     similarity = list1.dot(list2) / (np.sqrt(list1.dot(list1)) * np.sqrt(list2.dot(list2)))
     return similarity * 100
 
@@ -97,12 +105,13 @@ if __name__ == '__main__':
         if file.endswith('html'):
             parse_and_create('./data/' + file)
     '''
-    '''
+
     habits = [x for x in os.listdir('./data/') if x.endswith('habit')]
     for i in range(len(habits) - 1):
         habit1 = habits[i]
         for j in range(i + 1, len(habits)):
             habit2 = habits[j]
             print(habit1.split('.')[0] + '-' + habit2.split('.')[0] + ':', compute_similarity('./data/' + habit1, './data/' + habit2))
-    '''
-    print(compute_similarity('./data/wangpengyuan.habit', './data/zhangbeichen.habit'))
+
+    # print(compute_similarity('./data/wangpengyuan.habit', './data/zhangbeichen.habit'))
+    #parse_web(14258676)
