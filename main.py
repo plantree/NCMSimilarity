@@ -34,7 +34,7 @@ def parse_and_create(fileName):
         f.close()
 
 
-def parse_web(id):
+def parse_web(id, name):
     id = str(id)
     url = 'http://music.163.com/#/user/home?id=' + id
     driver = webdriver.PhantomJS()
@@ -53,7 +53,7 @@ def parse_web(id):
         songList = parse_html(html)
         print('{} musics were collected.'.format(len(songList)))
         songList = json.dumps(songList)
-        with open('data/' + id + '.habit', 'w') as fp:
+        with open('data/' + name + '.habit', 'w') as fp:
             fp.write(songList)
     else:
         print('Sorry! Too less music.')
