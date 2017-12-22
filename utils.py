@@ -11,6 +11,7 @@ Created on 2017/12/22 11:00
 
 from bs4 import BeautifulSoup
 
+
 def parse_html(html):
     bsObj = BeautifulSoup(html, 'lxml')
     try:
@@ -36,3 +37,14 @@ def parse_html(html):
             item = {'order': int(order), 'id': songId, 'name': songName, 'singer': singer, 'count': int(count)}
             songList.append(item)
     return songList
+
+
+def dot(x, y):
+    # compute two vector's dot mulitiple
+    sum = 0
+    if len(x) == len(y):
+        for i in range(len(x)):
+            sum += x[i] * y[i]
+        return sum
+    else:
+        return
