@@ -99,22 +99,7 @@ def compute_similarity(file1, file2):
 
 
 if __name__ == '__main__':
-    '''
-    files = os.listdir('./data/')
-    for file in files:
-        if file.endswith('html'):
-            parse_and_create('./data/' + file)
 
-    habits = [x for x in os.listdir('./data/') if x.endswith('habit')]
-    for i in range(len(habits) - 1):
-        habit1 = habits[i]
-        for j in range(i + 1, len(habits)):
-            habit2 = habits[j]
-            print(habit1.split('.')[0] + '-' + habit2.split('.')[0] + ':', compute_similarity('./data/' + habit1, './data/' + habit2))
-
-    # print(compute_similarity('./data/wangpengyuan.habit', './data/zhangbeichen.habit'))
-    #parse_web(14258676)
-    '''
     while True:
         option = input('You want to create habit data or compute similarity?(1/2)')
         if option == '1':
@@ -128,14 +113,16 @@ if __name__ == '__main__':
             else:
                 print('id is not legal.')
         elif option == '2':
-            files = os.listdir('data')
-            if len(files) != 2:
-                print('Error! Data directories must have two habit data.')
+            habits = [x for x in os.listdir('data') if x.endswith('habit')]
+            if len(habits) < 2:
+                print('Error! Too less habit data.')
             else:
-                file1 = 'data/' + files[0]
-                file2 = 'data/' + files[1]
-                print('{0}-{1}: {2}'.format(files[0].split('.')[0],
-                                            files[1].split('.')[0],
+                for i in range(len(habits) - 1):
+                    file1 = 'data/' + habits[i]
+                    for j in range(i + 1, len(habits)):
+                        file2 = 'data/' + habits[j]
+                        print('{0}-{1}: {2}'.format(habits[i].split('.')[0],
+                                            habits[j].split('.')[0],
                                             compute_similarity(file1, file2)))
         end = input('Continue?(y/n)')
         if end.lower() == 'n':
