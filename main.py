@@ -41,8 +41,9 @@ def parse_web(id, name):
     driver.get(url)
     frame = driver.find_element_by_id('g_iframe')
     driver.switch_to.frame(frame)
-    time.sleep(1)
+    time.sleep(2)
     allSongsBtn = driver.find_element_by_id('songsall')
+    driver.get_screenshot_as_file('test.png')
     if allSongsBtn.text != '':
         allSongsBtn.click()
         time.sleep(1)
