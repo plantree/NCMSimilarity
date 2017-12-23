@@ -54,8 +54,8 @@ def parse_web(id, name):
     mobile.click()
     loginName = driver.find_element_by_class_name('j-phone')
     passwd = driver.find_element_by_class_name('j-pwd')
-    actions = ActionChains(driver).click(loginName).send_keys('18621806327')\
-                .click(passwd).send_keys('18621806327').send_keys(Keys.ENTER)
+    actions = ActionChains(driver).click(loginName).send_keys('your telephone number')\
+                .click(passwd).send_keys('your password').send_keys(Keys.ENTER)
     actions.perform()
     time.sleep(3)
     myCookie = driver.get_cookies()
