@@ -17,7 +17,7 @@ from selenium import webdriver
 import time
 from utils import *
 
-
+# parse files
 def parse_and_create(fileName):
     try:
         f = open(fileName, 'rb')
@@ -34,6 +34,7 @@ def parse_and_create(fileName):
         f.close()
 
 
+# parse contents from web
 def parse_web(id, name):
     id = str(id)
     url = 'http://music.163.com/#/user/home?id=' + id
@@ -41,9 +42,8 @@ def parse_web(id, name):
     driver.get(url)
     frame = driver.find_element_by_id('g_iframe')
     driver.switch_to.frame(frame)
-    time.sleep(2)
+    time.sleep(3)
     allSongsBtn = driver.find_element_by_id('songsall')
-    driver.get_screenshot_as_file('test.png')
     if allSongsBtn.text != '':
         allSongsBtn.click()
         time.sleep(1)
@@ -56,7 +56,7 @@ def parse_web(id, name):
         print('{} musics were collected. Your own habit data '
               'about music has been successfully created.'.format(len(songList)))
         songList = json.dumps(songList)
-        with open('data/' + name + '.habit', 'w') as fp:
+        with open('../data/' + name + '.habit', 'w') as fp:
             fp.write(songList)
     else:
         print('Sorry! Too less music.')
@@ -104,8 +104,8 @@ if __name__ == '__main__':
     while True:
         option = input('You want to create habit data or compute similarity?(1/2)')
         if option == '1':
-            if not os.path.exists('data'):
-                os.mkdir('data')
+            if not os.path.exists('../data'):
+                os.mkdir('../data')
             id = input('Please input your id: ')
             if len(id) == 8:
                 name = input('Please input your name: ')
@@ -114,14 +114,16 @@ if __name__ == '__main__':
             else:
                 print('id is not legal.')
         elif option == '2':
-            habits = [x for x in os.listdir('data') if x.endswith('habit')]
+            print('Computing...')
+            time.sleep(5)
+            habits = [x for x in os.listdir('../data') if x.endswith('habit')]
             if len(habits) < 2:
                 print('Error! Too less habit data.')
             else:
                 for i in range(len(habits) - 1):
-                    file1 = 'data/' + habits[i]
+                    file1 = '../data/' + habits[i]
                     for j in range(i + 1, len(habits)):
-                        file2 = 'data/' + habits[j]
+                        file2 = '../data/' + habits[j]
                         print('{0}-{1}: {2}'.format(habits[i].split('.')[0],
                                             habits[j].split('.')[0],
                                             compute_similarity(file1, file2)))
