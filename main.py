@@ -14,6 +14,8 @@ import json
 import numpy as np
 import os
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 import time
 from utils import *
 
@@ -36,11 +38,34 @@ def parse_and_create(fileName):
 
 def parse_web(id, name):
     id = str(id)
-    url = 'http://music.163.com/#/user/home?id=' + id
+
+    # login and get cookies (not necessarily)
+
     driver = webdriver.PhantomJS()
+    '''
+    driver.get('http://music.163.com/')
+    frame = driver.find_element_by_id('g_iframe')
+    driver.switch_to.frame(frame)
+    login = driver.find_element_by_id('index-enter-default')
+    login.click()
+    time.sleep(1)
+    driver.switch_to.default_content()
+    mobile = driver.find_element_by_class_name('u-btn2')
+    mobile.click()
+    loginName = driver.find_element_by_class_name('j-phone')
+    passwd = driver.find_element_by_class_name('j-pwd')
+    actions = ActionChains(driver).click(loginName).send_keys('18621806327')\
+                .click(passwd).send_keys('18621806327').send_keys(Keys.ENTER)
+    actions.perform()
+    time.sleep(3)
+    myCookie = driver.get_cookies()
+    '''
+
+    url = 'http://music.163.com/#/user/home?id=' + id
     driver.get(url)
     frame = driver.find_element_by_id('g_iframe')
     driver.switch_to.frame(frame)
+    time.sleep(3)
     allSongsBtn = driver.find_element_by_id('songsall')
     if allSongsBtn.text != '':
         allSongsBtn.click()
@@ -105,13 +130,12 @@ if __name__ == '__main__':
         if file.endswith('html'):
             parse_and_create('./data/' + file)
     '''
-
+    '''
     habits = [x for x in os.listdir('./data/') if x.endswith('habit')]
     for i in range(len(habits) - 1):
         habit1 = habits[i]
         for j in range(i + 1, len(habits)):
             habit2 = habits[j]
             print(habit1.split('.')[0] + '-' + habit2.split('.')[0] + ':', compute_similarity('./data/' + habit1, './data/' + habit2))
-
+    '''
     # print(compute_similarity('./data/wangpengyuan.habit', './data/zhangbeichen.habit'))
-    #parse_web(14258676)
